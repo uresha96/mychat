@@ -1,38 +1,36 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import 'models/message.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // This runs when app is terminated
-  print("📨 Background message: ${message.data}");
-}
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   // This runs when app is terminated
+//   print("📨 Background message: ${message.data}");
+// }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp();
+  // // Initialize Firebase
+  // await Firebase.initializeApp();
 
-  // Set background message handler
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // // Set background message handler
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  // Initialize FCM
-  final fcm = FirebaseMessaging.instance;
+  // // Initialize FCM
+  // final fcm = FirebaseMessaging.instance;
 
-  // Request notification permissions (iOS & Android)
-  NotificationSettings settings = await fcm.requestPermission(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-  print('User granted permission: ${settings.authorizationStatus}');
+  // // Request notification permissions (iOS & Android)
+  // NotificationSettings settings = await fcm.requestPermission(
+  //   alert: true,
+  //   badge: true,
+  //   sound: true,
+  // );
+  // print('User granted permission: ${settings.authorizationStatus}');
 
   // Get device token
-  String? token = await fcm.getToken();
-  print("FCM Token: $token"); // send this to your server
+  // String? token = await fcm.getToken();
+  // print("FCM Token: $token"); // send this to your server
   runApp(const MyChat());
 }
 
@@ -66,20 +64,20 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    _initFCM();
+    // _initFCM();
 
-    // Listen for messages while app is in foreground
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("📨 Foreground message: ${message.notification?.title}");
-      // Optional: show a snackbar or in-app alert
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message.notification?.body ?? "New message")),
-      );
-    });
+    // // Listen for messages while app is in foreground
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   print("📨 Foreground message: ${message.notification?.title}");
+    //   // Optional: show a snackbar or in-app alert
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text(message.notification?.body ?? "New message")),
+    //   );
+    // });
 
-    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-      socket.emit("register_token", newToken);
-    });
+    // FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+    //   socket.emit("register_token", newToken);
+    // });
 
     socket = io.io(
       'http://192.168.178.60:3000',
@@ -229,23 +227,23 @@ class _ChatPageState extends State<ChatPage> {
     super.dispose();
   }
 
-  void _initFCM() async {
-    final fcm = FirebaseMessaging.instance;
+  // void _initFCM() async {
+  //   final fcm = FirebaseMessaging.instance;
 
-    NotificationSettings settings = await fcm.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-    print('User granted permission: ${settings.authorizationStatus}');
+  //   NotificationSettings settings = await fcm.requestPermission(
+  //     alert: true,
+  //     badge: true,
+  //     sound: true,
+  //   );
+  //   print('User granted permission: ${settings.authorizationStatus}');
 
-    String? token = await fcm.getToken();
-    print("FCM Token: $token"); // send to server
-    socket.emit("register_token", token);
+  //   String? token = await fcm.getToken();
+  //   print("FCM Token: $token"); // send to server
+  //   socket.emit("register_token", token);
 
-    // Listen to foreground messages
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("📨 Foreground message: ${message.notification?.body}");
-    });
-  }
+  //   // Listen to foreground messages
+  //   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  //     print("📨 Foreground message: ${message.notification?.body}");
+  //   });
+  // }
 }
