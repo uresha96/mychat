@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mychat/chat_page.dart';
+import 'package:mychat/main_view.dart';
 
 // Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 //   // This runs when app is terminated
@@ -44,7 +44,7 @@ class MyChat extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: const ChatPage(),
+      home: ChatList(),
     );
   }
 }
