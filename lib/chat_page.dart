@@ -154,7 +154,6 @@ class _ChatPageState extends State<ChatPage> {
       ),
       body: Column(
         children: [
-          /// Messages list
           Expanded(
             child: ListView.builder(
               controller: scrollController,
@@ -164,8 +163,6 @@ class _ChatPageState extends State<ChatPage> {
               },
             ),
           ),
-
-          /// Input area
           buildInputArea(),
         ],
       ),
