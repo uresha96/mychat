@@ -32,6 +32,10 @@ class ChatList extends StatelessWidget {
         ),
         centerTitle: true,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: const Icon(Icons.chat_outlined),
+      ),
       body: Stack(
         children: [
           //const WaveBackground(),
@@ -106,7 +110,7 @@ class ChatList extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF4A00E0),
+                      color: Colors.grey,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -124,7 +128,7 @@ class ChatList extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute<void>(
-                  builder: (context) => const ChatPage(),
+                  builder: (context) => ChatPage(chat: chat),
                 ),
               );
             },

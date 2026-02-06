@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mychat/models/chat.dart';
 import 'package:mychat/models/message.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final Chat chat;
+  const ChatPage({super.key, required this.chat});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -41,6 +43,7 @@ class _ChatPageState extends State<ChatPage> {
     socket.onConnect((_) {
       print('Connected to server!');
       socket.emit('message', 'Hello from Flutter');
+      socket.emit('register_conversation', widget.chat.id);
     });
 
     socket.onDisconnect((_) {
@@ -149,7 +152,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Chat"),
+        title: Text(widget.chat.name),
         centerTitle: true,
       ),
       body: Column(
