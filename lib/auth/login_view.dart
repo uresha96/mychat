@@ -4,7 +4,7 @@ import 'package:mychat/auth/auth_controller.dart';
 import 'package:mychat/auth/auth_state.dart';
 import 'package:mychat/chat/chat_list_page.dart';
 import 'package:mychat/main_background.dart';
-import 'package:mychat/signup_view.dart';
+import 'package:mychat/auth/signup_view.dart';
 
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
@@ -114,11 +114,14 @@ class LoginViewState extends ConsumerState<LoginView> {
       obscureText: obscure,
       autofocus: autoFocus,
       decoration: InputDecoration(
-        contentPadding:
-            EdgeInsets.only(left: 15.0, right: 15.0, bottom: 10.0, top: 10.0),
-        prefixIcon: Icon(icon),
         hintText: hintText,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(50)),
+        prefixIcon: Icon(icon),
+        filled: true,
+        fillColor: const Color(0xFFF4F5F8),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(50),
+          borderSide: BorderSide.none,
+        ),
       ),
       validator: (v) => v!.isEmpty ? 'Bitte ausfüllen' : null,
     );

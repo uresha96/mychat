@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mychat/core/global_provider.dart';
 import 'package:mychat/core/socket_server.dart';
 import 'package:mychat/models/message.dart';
 
