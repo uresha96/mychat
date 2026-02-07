@@ -57,9 +57,9 @@ class _ChatPageState extends State<ChatPage> {
       setState(() {
         messages.add(
           Message(
+            id: "1",
             text: data.toString(),
             isMe: false,
-            time: DateTime.now(),
           ),
         );
       });
@@ -83,9 +83,9 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       messages.add(
         Message(
+          id: "2",
           text: controller.text.trim(),
           isMe: true,
-          time: DateTime.now(),
         ),
       );
     });
@@ -152,7 +152,9 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.chat.name),
+        title: Row(children: [
+          Text(widget.chat.name),
+        ]),
         centerTitle: true,
       ),
       body: Column(

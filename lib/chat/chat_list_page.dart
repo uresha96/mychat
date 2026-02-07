@@ -1,30 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:mychat/chat_page.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mychat/chat/chat_list_controller.dart';
+import 'package:mychat/chat/chat_page.dart';
+import 'package:mychat/main_background.dart';
 import 'package:mychat/models/chat.dart';
 
-class ChatList extends StatelessWidget {
+class ChatList extends ConsumerWidget {
   ChatList({super.key});
 
-  final List<Chat> chats = [
-    Chat(
-      id: "1",
-      name: "Buntu",
-      avatar:
-          "https://static.vecteezy.com/system/resources/previews/005/346/410/non_2x/close-up-portrait-of-smiling-handsome-young-caucasian-man-face-looking-at-camera-on-isolated-light-gray-studio-background-photo.jpg",
-    ),
-    Chat(
-      id: "2",
-      name: "amma",
-      avatar:
-          "https://i.ds.at/qTka4Q/rs:fill:750:0/plain/2018/11/16/14FEMALEPLEASURE-1.jpg",
-    )
-  ];
   final ScrollController scrollController = ScrollController();
-  // @override
-  // State<ChatList> createState() => ChatListState();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final chats = ref.watch(chatListProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Image(
@@ -38,7 +27,7 @@ class ChatList extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          //const WaveBackground(),
+          MainBackground(),
           Column(
             children: [
               Expanded(

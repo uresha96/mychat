@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mychat/auth/auth_controller.dart';
+import 'package:mychat/chat/chat_list_page.dart';
 import 'package:mychat/login_view.dart';
-import 'package:mychat/main_view.dart';
 
 // Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 //   // This runs when app is terminated
@@ -30,21 +32,27 @@ Future<void> main() async {
   // Get device token
   // String? token = await fcm.getToken();
   // print("FCM Token: $token"); // send this to your server
-  runApp(const MyChat());
+  runApp(
+    ProviderScope(
+      child: MyChat(),
+    ),
+  );
 }
 
-class MyChat extends StatelessWidget {
+class MyChat extends ConsumerWidget {
   const MyChat({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authProvider);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: LoginView(),
+      home: auth.successfullyLoggedIn ? ChatList() : LoginView(),
     );
   }
 }
