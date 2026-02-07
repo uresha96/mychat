@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mychat/login_view.dart';
 import 'package:mychat/main_view.dart';
 
 // Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -43,7 +44,7 @@ class MyChat extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: ChatList(),
+      home: LoginView(),
     );
   }
 }

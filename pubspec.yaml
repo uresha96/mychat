@@ -70,6 +70,7 @@ flutter:
     - assets/icons/mychat_logo.png
     - assets/icons/mychat.png
     - assets/icons/mchat.png
+    - assets/icons/mychat_logo_transparent.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
