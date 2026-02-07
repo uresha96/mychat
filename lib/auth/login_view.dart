@@ -53,14 +53,14 @@ class LoginViewState extends ConsumerState<LoginView> {
                   inputTextField(
                     controller: emailController,
                     hint: "Email",
-                    icon: Icons.email,
+                    icon: Icons.email_outlined,
                   ),
                   SizedBox(
                     height: 12,
                   ),
                   inputTextField(
                     controller: passwordController,
-                    icon: Icons.lock,
+                    icon: Icons.lock_outline,
                     hint: "Password",
                     obscure: true,
                   ),
