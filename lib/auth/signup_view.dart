@@ -4,6 +4,8 @@ import 'package:mychat/auth/auth_controller.dart';
 import 'package:mychat/auth/auth_state.dart';
 import 'package:mychat/main_background.dart';
 
+import '../custom_widgets.dart';
+
 class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
 
@@ -59,69 +61,28 @@ class SignupPageState extends ConsumerState<SignupPage> {
                         style: TextStyle(color: Colors.grey),
                       ),
                       const SizedBox(height: 32),
-                      inputField(
+                      inputTextField(
                         controller: nameController,
                         icon: Icons.person_outline,
                         hint: 'Name',
                       ),
                       const SizedBox(height: 16),
-                      inputField(
+                      inputTextField(
                         controller: emailController,
                         icon: Icons.email_outlined,
                         hint: 'Email',
                       ),
                       const SizedBox(height: 16),
-                      inputField(
+                      inputTextField(
                         controller: passwordController,
                         icon: Icons.lock_outline,
                         hint: 'Password',
                         obscure: true,
                       ),
                       const SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: ElevatedButton(
-                          onPressed: auth.isLoading
-                              ? null
-                              : () {
-                                  if (formKey.currentState!.validate()) {
-                                    ref.read(authProvider.notifier).signup(
-                                        email: emailController.text,
-                                        password: passwordController.text,
-                                        username: nameController.text);
-                                  }
-                                },
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: auth.isLoading
-                              ? const CircularProgressIndicator()
-                              : Ink(
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color(0xFF4FACFE),
-                                        Color(0xFFB721FF),
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: const Center(
-                                    child: Text(
-                                      'Sign up',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                        ),
-                      ),
+                      button(auth.isLoading, "Sign up", () {
+                        signup();
+                      }),
                       const SizedBox(height: 16),
                       TextButton(
                         onPressed: () {
@@ -143,27 +104,13 @@ class SignupPageState extends ConsumerState<SignupPage> {
     );
   }
 
-  Widget inputField({
-    required TextEditingController controller,
-    required IconData icon,
-    required String hint,
-    bool obscure = false,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscure,
-      decoration: InputDecoration(
-        hintText: hint,
-        prefixIcon: Icon(icon),
-        filled: true,
-        fillColor: const Color(0xFFF4F5F8),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(50),
-          borderSide: BorderSide.none,
-        ),
-      ),
-      validator: (v) => v!.isEmpty ? 'Bitte ausfüllen' : null,
-    );
+  void signup() {
+    if (formKey.currentState!.validate()) {
+      ref.read(authProvider.notifier).signup(
+          email: emailController.text,
+          password: passwordController.text,
+          username: nameController.text);
+    }
   }
 
   @override
