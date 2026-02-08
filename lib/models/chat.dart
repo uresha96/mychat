@@ -1,5 +1,5 @@
 class Chat {
-  final String id;
+  final int id;
   final String name;
   final String avatar;
 
@@ -8,4 +8,12 @@ class Chat {
     required this.name,
     required this.avatar,
   });
+
+  factory Chat.fromJson(Map<String, dynamic> json) {
+    return Chat(
+      id: json['id'],
+      name: json['name'],
+      avatar: json['avatar'],
+    );
+  }
 }

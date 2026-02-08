@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mychat/auth/auth_controller.dart';
 import 'package:mychat/chat/chat_list_page.dart';
 import 'package:mychat/auth/login_view.dart';
@@ -8,6 +9,7 @@ import 'package:mychat/auth/login_view.dart';
 //   // This runs when app is terminated
 //   print("📨 Background message: ${message.data}");
 // }
+final storage = FlutterSecureStorage();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mychat/chat/add_chat_dialog.dart';
 import 'package:mychat/chat/chat_list_controller.dart';
+import 'package:mychat/chat/chat_list_state.dart';
 import 'package:mychat/chat/chat_page.dart';
 import 'package:mychat/main_background.dart';
 import 'package:mychat/models/chat.dart';
@@ -12,33 +14,42 @@ class ChatList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chats = ref.watch(chatListProvider);
+    final chatState = ref.watch(chatListProvider);
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Image(
-          image: AssetImage("assets/icons/mchat.png"),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Row(
+          children: [
+            Image.asset(
+              "assets/icons/logo_transparent.png",
+              scale: 12,
+            ),
+          ],
         ),
         centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.chat_outlined),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (_) => const AddChatDialog(),
+          );
+        },
+        child: const Icon(Icons.add),
+        backgroundColor: Colors.white,
       ),
       body: Stack(
         children: [
           MainBackground(),
           Column(
             children: [
-              Expanded(
-                child: ListView.builder(
-                  controller: scrollController,
-                  itemCount: chats.length,
-                  itemBuilder: (context, index) {
-                    return buildChatItem(chats[index], context);
-                  },
-                ),
+              SizedBox(
+                height: 10,
               ),
+              getWidget(chatState),
             ],
           ),
         ],
@@ -123,6 +134,26 @@ class ChatList extends ConsumerWidget {
             },
           ),
         ),
+      ),
+    );
+  }
+
+  getWidget(ChatListState chatState) {
+    if (chatState.isLoading) {
+      return CircularProgressIndicator();
+    }
+
+    if (chatState.error != null) {
+      return Text(chatState.error!);
+    }
+
+    return Expanded(
+      child: ListView.builder(
+        controller: scrollController,
+        itemCount: chatState.chats.length,
+        itemBuilder: (context, index) {
+          return buildChatItem(chatState.chats[index], context);
+        },
       ),
     );
   }
