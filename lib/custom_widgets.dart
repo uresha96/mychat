@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 Widget inputTextField({
   required TextEditingController controller,
-  required IconData icon,
+  IconData? icon,
   required String hint,
   bool obscure = false,
 }) {
@@ -11,7 +11,7 @@ Widget inputTextField({
     obscureText: obscure,
     decoration: InputDecoration(
       hintText: hint,
-      prefixIcon: Icon(icon),
+      prefixIcon: icon == null ? null : Icon(icon),
       filled: true,
       fillColor: const Color(0xFFF4F5F8),
       border: OutlineInputBorder(

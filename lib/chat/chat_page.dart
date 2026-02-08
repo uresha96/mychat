@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mychat/custom_widgets.dart';
+import 'package:mychat/main_background.dart';
 import 'package:mychat/models/chat.dart';
 import 'package:mychat/models/message.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -32,43 +34,43 @@ class _ChatPageState extends State<ChatPage> {
     //   socket.emit("register_token", newToken);
     // });
 
-    socket = io.io(
-      'http://192.168.178.60:3000',
-      io.OptionBuilder()
-          .setTransports(['websocket'])
-          .disableAutoConnect()
-          .build(),
-    );
+    // socket = io.io(
+    //   'http://192.168.178.60:3000',
+    //   io.OptionBuilder()
+    //       .setTransports(['websocket'])
+    //       .disableAutoConnect()
+    //       .build(),
+    // );
 
-    socket.onConnect((_) {
-      print('Connected to server!');
-      socket.emit('message', 'Hello from Flutter');
-      socket.emit('register_conversation', widget.chat.id);
-    });
+    // socket.onConnect((_) {
+    //   print('Connected to server!');
+    //   socket.emit('message', 'Hello from Flutter');
+    //   socket.emit('register_conversation', widget.chat.id);
+    // });
 
-    socket.onDisconnect((_) {
-      print('Disconnected from server');
-    });
+    // socket.onDisconnect((_) {
+    //   print('Disconnected from server');
+    // });
 
-    socket.onConnectError((err) => print('ConnectError: $err'));
-    socket.onError((err) => print('Error: $err'));
+    // socket.onConnectError((err) => print('ConnectError: $err'));
+    // socket.onError((err) => print('Error: $err'));
 
-    socket.on('chat_message_reply', (data) {
-      setState(() {
-        messages.add(
-          Message(
-            id: "1",
-            text: data.toString(),
-            isMe: false,
-          ),
-        );
-      });
+    // socket.on('chat_message_reply', (data) {
+    //   setState(() {
+    //     messages.add(
+    //       Message(
+    //         id: "1",
+    //         text: data.toString(),
+    //         isMe: false,
+    //       ),
+    //     );
+    //   });
 
-      Future.delayed(const Duration(milliseconds: 100), () {
-        scrollController.jumpTo(scrollController.position.maxScrollExtent);
-      });
-    });
-    socket.connect();
+    //   Future.delayed(const Duration(milliseconds: 100), () {
+    //     scrollController.jumpTo(scrollController.position.maxScrollExtent);
+    //   });
+    // });
+    // socket.connect();
   }
 
   final List<Message> messages = [];
@@ -120,30 +122,22 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget buildInputArea() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 20),
-      color: Colors.white,
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: controller,
-              onSubmitted: (_) => sendMessage(),
-              decoration: InputDecoration(
-                hintText: "Type a message...",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              ),
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+        child: Row(
+          children: [
+            Expanded(
+                child: inputTextField(
+                    controller: controller, hint: 'Type a message...')),
+            const SizedBox(width: 8),
+            IconButton(
+              icon: const Icon(Icons.send),
+              onPressed: sendMessage,
             ),
-          ),
-          const SizedBox(width: 8),
-          FloatingActionButton(
-            onPressed: sendMessage,
-            child: const Icon(Icons.send),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -151,24 +145,38 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      extendBody: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: Row(children: [
+          CircleAvatar(
+            radius: 20,
+            backgroundImage: NetworkImage(widget.chat.avatar),
+          ),
+          SizedBox(
+            width: 12,
+          ),
           Text(widget.chat.name),
         ]),
-        centerTitle: true,
       ),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: ListView.builder(
-              controller: scrollController,
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                return buildMessage(messages[index]);
-              },
-            ),
+          MainBackground(),
+          Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    return buildMessage(messages[index]);
+                  },
+                ),
+              ),
+              buildInputArea(),
+            ],
           ),
-          buildInputArea(),
         ],
       ),
     );
