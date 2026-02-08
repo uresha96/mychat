@@ -13,7 +13,8 @@ class Chat {
     return Chat(
       id: json['id'],
       name: json['name'],
-      avatar: json['avatar'],
+      avatar: json['avatar'] ??
+          'https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg',
     );
   }
 }

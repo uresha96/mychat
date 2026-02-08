@@ -16,23 +16,43 @@ class ChatListController extends StateNotifier<ChatListState> {
     loadInitial();
   }
 
-  void loadInitial() {
-    state = state.copyWith(
-      chats: [
-        Chat(
-          id: 1,
-          name: "Buntu",
-          avatar:
-              "https://static.vecteezy.com/system/resources/previews/005/346/410/non_2x/close-up-portrait-of-smiling-handsome-young-caucasian-man-face-looking-at-camera-on-isolated-light-gray-studio-background-photo.jpg",
-        ),
-        Chat(
-          id: 2,
-          name: "Amma",
-          avatar:
-              "https://i.ds.at/qTka4Q/rs:fill:750:0/plain/2018/11/16/14FEMALEPLEASURE-1.jpg",
-        ),
-      ],
-    );
+  Future<void> loadInitial() async {
+    try {
+      String userId = await storage.readData("userId") ?? '';
+
+      final response = await dio.get(
+        "/users/$userId/chats",
+      );
+
+      final List<dynamic> data = response.data;
+      var chatList = data.map((json) => Chat.fromJson(json)).toList();
+
+      state = state.copyWith(
+        isLoading: false,
+        chats: chatList,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Adding chat failed: $e',
+      );
+    }
+    // state = state.copyWith(
+    //   chats: [
+    //     Chat(
+    //       id: 1,
+    //       name: "Buntu",
+    //       avatar:
+    //           "https://static.vecteezy.com/system/resources/previews/005/346/410/non_2x/close-up-portrait-of-smiling-handsome-young-caucasian-man-face-looking-at-camera-on-isolated-light-gray-studio-background-photo.jpg",
+    //     ),
+    //     Chat(
+    //       id: 2,
+    //       name: "Amma",
+    //       avatar:
+    //           "https://i.ds.at/qTka4Q/rs:fill:750:0/plain/2018/11/16/14FEMALEPLEASURE-1.jpg",
+    //     ),
+    //   ],
+    // );
   }
 
   Future<void> addNewChat({
