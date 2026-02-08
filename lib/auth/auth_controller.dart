@@ -1,8 +1,13 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mychat/core/dio_provider.dart';
 import 'auth_state.dart';
 
 class AuthController extends StateNotifier<AuthState> {
   AuthController() : super(AuthState.initial());
+  final Dio dio = DioClient.dio;
 
   Future<void> login({
     required String email,
@@ -11,20 +16,26 @@ class AuthController extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      // TODO: Backend Call (HTTP oder Socket)
-      await Future.delayed(const Duration(seconds: 1));
+      Map<String, String> params = {"email": email, "password": password};
+      final response = await dio.post("/users/login", queryParameters: params);
 
-      // Simulierter Response
-      const token = 'fake-jwt-token';
-      const userId = 'user-123';
+      if (response.statusCode == 200) {
+        const token = 'fake-jwt-token';
+        const userId = 'user-123';
 
-      state = state.copyWith(
-        isLoading: false,
-        isAuthenticated: true,
-        successfullyLoggedIn: true,
-        token: token,
-        userId: userId,
-      );
+        state = state.copyWith(
+          isLoading: false,
+          isAuthenticated: true,
+          successfullyLoggedIn: true,
+          token: token,
+          userId: userId,
+        );
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          error: response.data.toString(),
+        );
+      }
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -39,11 +50,23 @@ class AuthController extends StateNotifier<AuthState> {
     required String username,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
+    print("##############################");
+    dio.interceptors.add(LogInterceptor(
+      request: true,
+      requestHeader: true,
+      requestBody: true,
+      responseHeader: false,
+      responseBody: true,
+      error: true,
+    ));
 
+    print(dio.options.baseUrl);
     try {
-      // TODO: Backend Call
-      await Future.delayed(const Duration(seconds: 1));
+      final response = await dio.post("/users",
+          data: jsonEncode(
+              {"email": email, "password": password, "name": username}));
 
+      print(response);
       const token = 'fake-jwt-token';
       const userId = 'user-123';
 
