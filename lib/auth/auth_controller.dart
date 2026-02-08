@@ -48,7 +48,7 @@ class AuthController extends StateNotifier<AuthState> {
         const token = 'fake-jwt-token';
         const userId = 'user-123';
 
-        socketService.connect(token, user.id);
+        socketService.connect(token, user);
         socketService.setupListeners(ref);
 
         state = state.copyWith(

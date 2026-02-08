@@ -59,6 +59,7 @@ class ChatListController extends StateNotifier<ChatListState> {
     required String name,
     required String email,
   }) async {
+    print("ADD NEW CHAT");
     state = state.copyWith(isLoading: true, error: null);
 
     dio.interceptors.add(LogInterceptor(
