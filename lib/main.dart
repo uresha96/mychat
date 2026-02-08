@@ -20,29 +20,8 @@ Future<void> main() async {
     systemNavigationBarIconBrightness: Brightness.light,
     statusBarIconBrightness: Brightness.light,
   ));
-
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-  // // Initialize Firebase
-  // await Firebase.initializeApp();
-
-  // // Set background message handler
-  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  // // Initialize FCM
-  // final fcm = FirebaseMessaging.instance;
-
-  // // Request notification permissions (iOS & Android)
-  // NotificationSettings settings = await fcm.requestPermission(
-  //   alert: true,
-  //   badge: true,
-  //   sound: true,
-  // );
-  // print('User granted permission: ${settings.authorizationStatus}');
-
-  // Get device token
-  // String? token = await fcm.getToken();
-  // print("FCM Token: $token"); // send this to your server
   runApp(
     ProviderScope(
       child: MyChat(),
@@ -55,15 +34,13 @@ class MyChat extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final auth = ref.watch(authProvider);
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: auth.successfullyLoggedIn ? ChatList() : LoginView(),
+      home: LoginView(),
     );
   }
 }

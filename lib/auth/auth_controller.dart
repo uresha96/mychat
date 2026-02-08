@@ -3,12 +3,17 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mychat/core/dio_provider.dart';
+import 'package:mychat/core/global_provider.dart';
 import 'package:mychat/core/secure_storage.dart';
+import 'package:mychat/core/socket_server.dart';
 import 'package:mychat/models/user.dart';
 import 'auth_state.dart';
 
 class AuthController extends StateNotifier<AuthState> {
-  AuthController() : super(AuthState.initial());
+  final SocketService socketService;
+  var ref;
+
+  AuthController(this.ref, this.socketService) : super(AuthState.initial());
   final Dio dio = DioClient.dio;
   final storage = SecureStorage();
 
@@ -17,6 +22,14 @@ class AuthController extends StateNotifier<AuthState> {
     required String password,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
+    dio.interceptors.add(LogInterceptor(
+      request: true,
+      requestHeader: true,
+      requestBody: true,
+      responseHeader: false,
+      responseBody: true,
+      error: true,
+    ));
 
     try {
       Map<String, String> params = {"email": email, "password": password};
@@ -27,17 +40,16 @@ class AuthController extends StateNotifier<AuthState> {
       if (response.statusCode == 200) {
         print("STATUS 200");
 
-        try {
-          var user = User.fromJson(data);
-          storage.writeData("userId", user.id.toString());
-          storage.writeData("userName", user.name);
-          storage.writeData("userEmail", user.email);
-        } catch (e) {
-          print(e);
-        }
+        var user = User.fromJson(data);
+        storage.writeData("userId", user.id.toString());
+        storage.writeData("userName", user.name);
+        storage.writeData("userEmail", user.email);
 
         const token = 'fake-jwt-token';
         const userId = 'user-123';
+
+        socketService.connect(token, user.id);
+        socketService.setupListeners(ref);
 
         state = state.copyWith(
           isLoading: false,
@@ -68,14 +80,6 @@ class AuthController extends StateNotifier<AuthState> {
     required String username,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
-    dio.interceptors.add(LogInterceptor(
-      request: true,
-      requestHeader: true,
-      requestBody: true,
-      responseHeader: false,
-      responseBody: true,
-      error: true,
-    ));
 
     print(dio.options.baseUrl);
     try {
@@ -101,12 +105,16 @@ class AuthController extends StateNotifier<AuthState> {
     }
   }
 
-  void logout() {
-    // TODO: Token löschen + Socket trennen
+  Future<void> logout() async {
+    socketService.disconnect();
+    //await storage.deleteAll();
     state = AuthState.initial();
   }
 }
 
 final authProvider = StateNotifierProvider<AuthController, AuthState>(
-  (ref) => AuthController(),
+  (ref) {
+    final socketService = ref.read(socketProvider);
+    return AuthController(ref, socketService);
+  },
 );

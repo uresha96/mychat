@@ -1,13 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mychat/core/socket_server.dart';
+import 'package:mychat/core/global_provider.dart';
 import 'package:mychat/models/message.dart';
 
 class ChatController extends StateNotifier<List<Message>> {
-  final SocketService socket;
   final String chatId;
+  final Ref ref;
 
-  ChatController(this.socket, this.chatId) : super([]) {
-    socket.on('message', onMessage);
+  ChatController(this.ref, this.chatId) : super([]) {
     loadInitial();
   }
 
@@ -19,12 +18,17 @@ class ChatController extends StateNotifier<List<Message>> {
     ];
   }
 
-  void onMessage(dynamic data) {
-    state = [...state, Message.fromJson(data)];
+  void onMessage(Message newMessage) {
+    print("On Message");
+    state = [...state, newMessage];
   }
 
-  void sendMessage(String text) {
-    socket.emit('chat_message', {'to': chatId, 'text': text});
+  void sendMessage(String text, int to) {
+    print("sendMessage");
+
+    final socket = ref.read(socketProvider);
+    socket.emit("chat_message", {"to": to, "message": text});
+
     state = [
       ...state,
       Message(
@@ -36,7 +40,9 @@ class ChatController extends StateNotifier<List<Message>> {
   }
 }
 
-// final chatProvider = StateNotifierProvider.family<ChatController, List<Message>,
-//     SocketService, String>(
-//   (ref, socket, chatId) => ChatController(socket, chatId),
-// );
+final chatProvider =
+    StateNotifierProvider.family<ChatController, List<Message>, String>(
+  (ref, chatId) {
+    return ChatController(ref, chatId);
+  },
+);
