@@ -52,8 +52,10 @@ class SocketService {
       );
 
       final chatController = ref.read(chatProvider(from).notifier);
-      final chatExists =
-          ref.read(chatListProvider).chats.any((chat) => chat.withUser == from);
+      final chatExists = ref
+          .read(chatListProvider)
+          .chats
+          .any((chat) => chat.withUser == int.parse(from));
 
       if (!chatExists) {
         final senderName = data['senderName'].toString();
@@ -64,6 +66,17 @@ class SocketService {
             .addNewChat(name: senderName, email: senderEmail);
       }
       chatController.onMessage(newMessage);
+    });
+
+    socket.on("user_connected", (data) {
+      print(data);
+      final chatController = ref.read(chatProvider(data.toString()).notifier);
+      chatController.setOnline(true);
+    });
+    socket.on("user_disconnected", (data) {
+      print(data);
+      final chatController = ref.read(chatProvider(data.toString()).notifier);
+      chatController.setOnline(false);
     });
   }
 }

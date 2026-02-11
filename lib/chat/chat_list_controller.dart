@@ -37,22 +37,6 @@ class ChatListController extends StateNotifier<ChatListState> {
         error: 'Adding chat failed: $e',
       );
     }
-    // state = state.copyWith(
-    //   chats: [
-    //     Chat(
-    //       id: 1,
-    //       name: "Buntu",
-    //       avatar:
-    //           "https://static.vecteezy.com/system/resources/previews/005/346/410/non_2x/close-up-portrait-of-smiling-handsome-young-caucasian-man-face-looking-at-camera-on-isolated-light-gray-studio-background-photo.jpg",
-    //     ),
-    //     Chat(
-    //       id: 2,
-    //       name: "Amma",
-    //       avatar:
-    //           "https://i.ds.at/qTka4Q/rs:fill:750:0/plain/2018/11/16/14FEMALEPLEASURE-1.jpg",
-    //     ),
-    //   ],
-    // );
   }
 
   Future<void> addNewChat({

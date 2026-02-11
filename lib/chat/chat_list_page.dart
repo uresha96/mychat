@@ -17,16 +17,15 @@ class ChatList extends ConsumerWidget {
     final chatState = ref.watch(chatListProvider);
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         title: Row(
           children: [
             Image.asset(
               "assets/icons/logo_transparent.png",
               scale: 12,
             ),
+            Spacer(),
+            Icon(Icons.settings_outlined),
           ],
         ),
         centerTitle: true,
@@ -78,12 +77,20 @@ class ChatList extends ConsumerWidget {
               radius: 24,
               backgroundImage: NetworkImage(chat.avatar),
             ),
-            title: Text(
-              chat.name,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+            title: Row(
+              children: [
+                Text(
+                  chat.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Icon(Icons.online_prediction_sharp),
+              ],
             ),
             subtitle: Text(
               "lastMessage",
