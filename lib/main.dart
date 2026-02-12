@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mychat/auth/auth_controller.dart';
 import 'package:mychat/chat/chat_list_page.dart';
 import 'package:mychat/auth/login_view.dart';
+import 'package:mychat/core/theme_provider.dart';
 
 // Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 //   // This runs when app is terminated
@@ -34,13 +35,17 @@ class MyChat extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+    final authState = ref.watch(authProvider);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
+      themeMode: themeMode,
+      theme: ThemeData.light(
         useMaterial3: true,
-        colorSchemeSeed: Colors.blue,
       ),
-      home: LoginView(),
+      darkTheme: ThemeData.dark(useMaterial3: true),
+      home: authState.isAuthenticated ? ChatList() : const LoginView(),
     );
   }
 }

@@ -107,7 +107,7 @@ class AuthController extends StateNotifier<AuthState> {
 
   Future<void> logout() async {
     socketService.disconnect();
-    //await storage.deleteAll();
+    // await storage.deleteData();
     state = AuthState.initial();
   }
 }

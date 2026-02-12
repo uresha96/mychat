@@ -6,6 +6,7 @@ import 'package:mychat/chat/chat_list_state.dart';
 import 'package:mychat/chat/chat_page.dart';
 import 'package:mychat/main_background.dart';
 import 'package:mychat/models/chat.dart';
+import 'package:mychat/settings_page.dart';
 
 class ChatList extends ConsumerWidget {
   ChatList({super.key});
@@ -25,7 +26,15 @@ class ChatList extends ConsumerWidget {
               scale: 12,
             ),
             Spacer(),
-            Icon(Icons.settings_outlined),
+            IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (context) => SettingsPage(),
+                      ));
+                },
+                icon: Icon(Icons.settings_outlined))
           ],
         ),
         centerTitle: true,
