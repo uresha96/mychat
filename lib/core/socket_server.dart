@@ -1,13 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
 import 'package:mychat/chat/chat_controller.dart';
 import 'package:mychat/chat/chat_list_controller.dart';
 import 'package:mychat/models/user.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-import '../models/message.dart';
+import '../messages/message.dart';
 
 class SocketService {
   late IO.Socket socket;
+  final box = Hive.box<Message>('messages');
 
   void connect(String token, User user) {
     print(user);
@@ -42,16 +44,20 @@ class SocketService {
   }
 
   void setupListeners(Ref ref) {
-    socket.on("chat_message_reply", (data) {
+    socket.on("chat_message_reply", (data) async {
       print(data);
       final from = data['from'].toString();
 
-      final newMessage = Message(
-        text: data['message'],
-        isMe: false,
+      await box.add(
+        Message(
+          chatId: from,
+          senderId: from,
+          text: data['message'],
+          timestamp: DateTime.now(),
+          isMine: false,
+        ),
       );
 
-      final chatController = ref.read(chatProvider(from).notifier);
       final chatExists = ref
           .read(chatListProvider)
           .chats
@@ -65,7 +71,6 @@ class SocketService {
             .read(chatListProvider.notifier)
             .addNewChat(name: senderName, email: senderEmail);
       }
-      chatController.onMessage(newMessage);
     });
 
     socket.on("user_connected", (data) {

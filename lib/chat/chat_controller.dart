@@ -1,41 +1,36 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
 import 'package:mychat/chat/chat_state.dart';
 import 'package:mychat/core/global_provider.dart';
-import 'package:mychat/models/message.dart';
+import 'package:mychat/core/secure_storage.dart';
+import 'package:mychat/messages/message.dart';
 
 class ChatController extends StateNotifier<ChatState> {
   final String chatId;
   final Ref ref;
+  final box = Hive.box<Message>('messages');
 
-  ChatController(this.ref, this.chatId) : super(ChatState.initial()) {
-    loadInitial();
-  }
+  ChatController(this.ref, this.chatId) : super(ChatState.initial()) {}
 
-  void loadInitial() {
-    state = state.copyWith(messages: [
-      Message(id: '1', text: 'Hi!', isMe: false),
-      Message(id: '2', text: 'Hey 😄', isMe: true),
-    ]);
-  }
-
-  void onMessage(Message newMessage) {
-    print("On Message");
-    state = state.copyWith(messages: [...state.messages, newMessage]);
-  }
-
-  void sendMessage(String text, int to) {
+  Future<void> sendMessage(String text, int to) async {
     print("sendMessage");
-
     final socket = ref.read(socketProvider);
     socket.emit("chat_message", {"to": to, "message": text});
-    state = state.copyWith(messages: [
-      ...state.messages,
+
+    print("Box length: ${box.length}");
+    print("Messages in box: ${box.values.map((m) => m.text).toList()}");
+    await box.add(
       Message(
-        id: DateTime.now().toString(),
+        chatId: to.toString(),
+        senderId: SecureStorage.instance.readData("userId").toString(),
         text: text,
-        isMe: true,
-      )
-    ]);
+        timestamp: DateTime.now(),
+        isMine: true,
+      ),
+    );
+
+    print("Box length: ${box.length}");
+    print("Messages in box: ${box.values.map((m) => m.text).toList()}");
   }
 
   void setOnline(bool isOnline) {

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mychat/chat/chat_controller.dart';
-import 'package:mychat/chat/chat_state.dart';
 import 'package:mychat/core/global_provider.dart';
 import 'package:mychat/core/socket_server.dart';
 import 'package:mychat/custom_widgets.dart';
 import 'package:mychat/main_background.dart';
+import 'package:mychat/messages/message.dart';
 import 'package:mychat/models/chat.dart';
-import 'package:mychat/models/message.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   final Chat chat;
@@ -35,23 +35,41 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
   Widget buildMessage(Message msg) {
     return Align(
-      alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: msg.isMine ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         padding: const EdgeInsets.all(12),
         constraints: const BoxConstraints(maxWidth: 300),
         decoration: BoxDecoration(
-          color: msg.isMe
+          color: msg.isMine
               ? const Color.fromARGB(255, 149, 196, 234)
               : const Color.fromARGB(255, 212, 237, 218),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Text(
-          msg.text,
-          style: TextStyle(
-            color: msg.isMe ? Colors.black : Colors.black,
-            fontSize: 16,
-          ),
+        child: IntrinsicWidth(
+          child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  msg.text,
+                  style: TextStyle(
+                    // color: msg.isMine ? Colors.black : Colors.black,
+                    fontSize: 16,
+                  ),
+                  softWrap: true,
+                ),
+                SizedBox(
+                  width: 4,
+                ),
+                Text(
+                  '${msg.timestamp.hour.toString().padLeft(2, '0')}:${msg.timestamp.minute.toString().padLeft(2, '0')}',
+                  style: TextStyle(
+                    // color: msg.isMine ? Colors.black : Colors.black,
+                    fontSize: 8,
+                  ),
+                ),
+              ]),
         ),
       ),
     );
@@ -94,13 +112,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     final socket = ref.read(socketProvider);
     final chatState = ref.watch(chatProvider(widget.chat.withUser.toString()));
 
-    ref.listen<ChatState>(chatProvider(widget.chat.withUser.toString()),
-        (previous, next) {
-      if (previous?.messages.length != next.messages.length) {
-        scrollToBottom();
-      }
-    });
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       extendBody: true,
@@ -128,11 +139,26 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           Column(
             children: [
               Expanded(
-                child: ListView.builder(
-                  controller: scrollController,
-                  itemCount: chatState.messages.length,
-                  itemBuilder: (context, index) {
-                    return buildMessage(chatState.messages[index]);
+                child: ValueListenableBuilder(
+                  valueListenable: Hive.box<Message>('messages').listenable(),
+                  builder: (context, Box<Message> box, _) {
+                    final messages = box.values
+                        .where(
+                            (m) => m.chatId == widget.chat.withUser.toString())
+                        .toList()
+                      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      scrollToBottom();
+                    });
+
+                    return ListView.builder(
+                      controller: scrollController,
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        return buildMessage(messages[index]);
+                      },
+                    );
                   },
                 ),
               ),

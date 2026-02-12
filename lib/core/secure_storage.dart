@@ -11,8 +11,12 @@ class SecureStorage {
     return instance;
   }
 
-  Future<String?> readData(String key) async {
-    return await storage.read(key: key);
+  // Future<String?> readData(String key) async {
+  //   return await storage.read(key: key);
+  // }
+
+  Future<String> readData(String key) async {
+    return await storage.read(key: key) ?? '';
   }
 
   Future<void> writeData(String key, String value) async {
