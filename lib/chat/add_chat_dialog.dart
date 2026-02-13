@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mychat/auth/auth_controller.dart';
 import 'package:mychat/chat/chat_list_controller.dart';
 import 'package:mychat/custom_widgets.dart';
 

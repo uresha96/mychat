@@ -18,7 +18,7 @@ class ChatListController extends StateNotifier<ChatListState> {
 
   Future<void> loadInitial() async {
     try {
-      String userId = await storage.readData("userId") ?? '';
+      String userId = await storage.readData("userId");
 
       final response = await dio.get(
         "/users/$userId/chats",
@@ -56,7 +56,7 @@ class ChatListController extends StateNotifier<ChatListState> {
     ));
 
     try {
-      String userId = await storage.readData("userId") ?? '';
+      String userId = await storage.readData("userId");
 
       final response = await dio.post(
         "/users/$userId/new-chat",

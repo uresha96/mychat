@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mychat/chat/chat_controller.dart';
@@ -34,42 +35,100 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 
   Widget buildMessage(Message msg) {
-    return Align(
-      alignment: msg.isMine ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        padding: const EdgeInsets.all(12),
-        constraints: const BoxConstraints(maxWidth: 300),
-        decoration: BoxDecoration(
-          color: msg.isMine
-              ? const Color.fromARGB(255, 149, 196, 234)
-              : const Color.fromARGB(255, 212, 237, 218),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: IntrinsicWidth(
-          child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  msg.text,
-                  style: TextStyle(
-                    // color: msg.isMine ? Colors.black : Colors.black,
-                    fontSize: 16,
+    final isMine = msg.isMine;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: Row(
+        mainAxisAlignment:
+            isMine ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 300),
+            child: Material(
+              color: isMine ? const Color(0xFF95C4EA) : const Color(0xFFD4EDDA),
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(16),
+                topRight: const Radius.circular(16),
+                bottomLeft: isMine
+                    ? const Radius.circular(16)
+                    : const Radius.circular(4),
+                bottomRight: isMine
+                    ? const Radius.circular(4)
+                    : const Radius.circular(16),
+              ),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onLongPress: () => showMessageOptions(msg),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
                   ),
-                  softWrap: true,
-                ),
-                SizedBox(
-                  width: 4,
-                ),
-                Text(
-                  '${msg.timestamp.hour.toString().padLeft(2, '0')}:${msg.timestamp.minute.toString().padLeft(2, '0')}',
-                  style: TextStyle(
-                    // color: msg.isMine ? Colors.black : Colors.black,
-                    fontSize: 8,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        msg.text,
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        formatTime(msg.timestamp),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ]),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String formatTime(DateTime time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return "$hour:$minute";
+  }
+
+  void showMessageOptions(Message msg) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.reply),
+              title: const Text("Reply"),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.copy),
+              title: const Text("Copy"),
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: msg.text));
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text("Delete", style: TextStyle(color: Colors.red)),
+              onTap: () {},
+            ),
+          ],
         ),
       ),
     );
