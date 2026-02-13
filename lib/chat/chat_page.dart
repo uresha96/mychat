@@ -95,12 +95,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     );
   }
 
-  String formatTime(DateTime time) {
-    final hour = time.hour.toString().padLeft(2, '0');
-    final minute = time.minute.toString().padLeft(2, '0');
-    return "$hour:$minute";
-  }
-
   void showMessageOptions(Message msg) {
     showModalBottomSheet(
       context: context,

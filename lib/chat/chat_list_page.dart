@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mychat/chat/add_chat_dialog.dart';
 import 'package:mychat/chat/chat_list_controller.dart';
 import 'package:mychat/chat/chat_list_state.dart';
 import 'package:mychat/chat/chat_page.dart';
+import 'package:mychat/custom_widgets.dart';
 import 'package:mychat/main_background.dart';
+import 'package:mychat/messages/message.dart';
 import 'package:mychat/models/chat.dart';
 import 'package:mychat/auth/settings_page.dart';
 
@@ -81,70 +84,90 @@ class ChatList extends ConsumerWidget {
               ),
             ],
           ),
-          child: ListTile(
-            leading: CircleAvatar(
-              radius: 24,
-              backgroundImage: NetworkImage(chat.avatar),
-            ),
-            title: Row(
-              children: [
-                Text(
-                  chat.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
+          child: ValueListenableBuilder(
+            valueListenable: Hive.box<Message>('messages').listenable(),
+            builder: (context, Box<Message> box, _) {
+              final newestMessage = box.values
+                  .where((m) => m.chatId == chat.withUser.toString())
+                  .fold<Message?>(
+                null,
+                (latest, current) {
+                  if (latest == null) return current;
+                  return current.timestamp.isAfter(latest.timestamp)
+                      ? current
+                      : latest;
+                },
+              );
+
+              return ListTile(
+                leading: CircleAvatar(
+                  radius: 24,
+                  backgroundImage: NetworkImage(chat.avatar),
                 ),
-                SizedBox(
-                  width: 10,
-                ),
-              ],
-            ),
-            subtitle: Text(
-              "lastMessage",
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: Colors.grey.shade600,
-              ),
-            ),
-            trailing: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  "time",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade500,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                if (10 > 0)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      "10",
+                title: Row(
+                  children: [
+                    Text(
+                      chat.name,
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
                       ),
                     ),
-                  ),
-              ],
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (context) => ChatPage(chat: chat),
+                    SizedBox(
+                      width: 10,
+                    ),
+                  ],
                 ),
+                subtitle: Text(
+                  newestMessage?.text ?? '',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                trailing: newestMessage == null
+                    ? null
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            formatTime(
+                                newestMessage?.timestamp ?? DateTime.now()),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          if (10 > 0)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                "10",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (context) => ChatPage(chat: chat),
+                    ),
+                  );
+                },
               );
             },
           ),
