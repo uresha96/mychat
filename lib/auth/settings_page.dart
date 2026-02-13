@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mychat/auth/auth_controller.dart';
 import 'package:mychat/core/theme_provider.dart';
-import 'package:mychat/profile_edit_page.dart';
+import 'package:mychat/auth/profile_edit_page.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});

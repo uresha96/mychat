@@ -6,7 +6,7 @@ import 'package:mychat/chat/chat_list_state.dart';
 import 'package:mychat/chat/chat_page.dart';
 import 'package:mychat/main_background.dart';
 import 'package:mychat/models/chat.dart';
-import 'package:mychat/settings_page.dart';
+import 'package:mychat/auth/settings_page.dart';
 
 class ChatList extends ConsumerWidget {
   ChatList({super.key});
@@ -98,7 +98,6 @@ class ChatList extends ConsumerWidget {
                 SizedBox(
                   width: 10,
                 ),
-                Icon(Icons.online_prediction_sharp),
               ],
             ),
             subtitle: Text(
